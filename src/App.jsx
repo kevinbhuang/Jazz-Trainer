@@ -11,11 +11,11 @@ function App() {
   const currentLesson = lessons[currentLessonIndex];
 
   const handleNext = () => {
+    if (!completedLessons.includes(currentLesson.id)) {
+      setCompletedLessons(prev => [...prev, currentLesson.id]);
+    }
     if (currentLessonIndex < lessons.length - 1) {
       setCurrentLessonIndex(prev => prev + 1);
-      if (!completedLessons.includes(currentLesson.id)) {
-        setCompletedLessons(prev => [...prev, currentLesson.id]);
-      }
     }
   };
 

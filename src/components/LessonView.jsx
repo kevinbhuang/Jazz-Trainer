@@ -4,19 +4,22 @@ import { Lightbulb, ArrowLeft, ArrowRight, BookOpen, Brain } from 'lucide-react'
 
 const LessonView = ({ lesson, onNext, onPrev, isFirst, isLast }) => {
   const [showFingerings, setShowFingerings] = useState(true);
-  const [interactiveDots, setInteractiveDots] = useState([]);
+  const [interactiveDots, setInteractiveDots] = useState({}); // { chordIdx: [{string, fret}] }
 
-  const handleFretClick = (string, fret) => {
+  const handleFretClick = (chordIdx, string, fret) => {
     setInteractiveDots(prev => {
-      const exists = prev.find(d => d.string === string && d.fret === fret);
-      if (exists) {
-        return prev.filter(d => !(d.string === string && d.fret === fret));
-      }
-      return [...prev, { string, fret }];
+      const currentDots = prev[chordIdx] || [];
+      const exists = currentDots.find(d => d.string === string && d.fret === fret);
+
+      const newDots = exists
+        ? currentDots.filter(d => !(d.string === string && d.fret === fret))
+        : [...currentDots, { string, fret }];
+
+      return { ...prev, [chordIdx]: newDots };
     });
   };
 
-  const resetInteractive = () => setInteractiveDots([]);
+  const resetInteractive = () => setInteractiveDots({});
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
@@ -91,8 +94,8 @@ const LessonView = ({ lesson, onNext, onPrev, isFirst, isLast }) => {
               key={idx}
               chord={chord}
               showFingerings={showFingerings}
-              onFretClick={handleFretClick}
-              customDots={interactiveDots}
+              onFretClick={(s, f) => handleFretClick(idx, s, f)}
+              customDots={interactiveDots[idx] || []}
             />
           ))}
         </div>
